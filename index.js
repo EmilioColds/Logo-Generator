@@ -1,8 +1,18 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+const path = require('path');
 const { Circle, Triangle, Square } = require('./lib/shapes');
 
+function writeToFile(fileName, data) {
+    const directoryPath = path.join(__dirname, 'Examples');
+    if (!fs.existsSync(directoryPath)) {
+        fs.mkdirSync(directoryPath);
+    }
+}
+
 async function main() {
+    writeToFile();
+
     const answers = await inquirer.prompt([
         {
             type: 'input', 
@@ -29,12 +39,13 @@ async function main() {
     ]);
 
     const shape = eval(`new ${answers.shapeLogo} ('${answers.shapeColor}')`);
-    const svgImage = `<svg version="1.1" width="300" height="200" xmls="http://www.w3.org/2000/svg">\n` + 
+    const svgImage = `<svg version="1.1" width="300" height="200" xmlns="http://www.w3.org/2000/svg">\n` + 
                      ` ${shape.svg()}\n` + 
                      ` <text x="150" y="125" font-size="60" text-anchor="middle" fill="${answers.textColor}">${answers.textLogo}</text>\n` + 
                      `</svg>`;
 
-    fs.writeFileSync('logo.svg', svgImage);
+    const filePath = path.join(__dirname, 'examples', 'logo.svg');
+    fs.writeFileSync(filePath, svgImage);
     console.log('Generated logo.svg');
 }
 
